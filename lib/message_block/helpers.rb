@@ -39,8 +39,24 @@ module MessageBlock
       flash_messages[options[:model_error_type].to_sym] ||= []
       flash_messages[options[:model_error_type].to_sym] += model_errors
       
+      if !flash_messages[:success].blank?
+        blurb = "Success!"
+      elsif !flash_messages[:info].blank?
+        blurb = "Notice:"
+      elsif !flash_messages[:alert].blank?
+        blurb = "Warning:"
+      else
+        blurb = "There was a problem!"
+      end
+      
       contents = flash_messages.keys.sort_by(&:to_s).select {|type| !flash_messages[type.to_sym].empty? }.map do |type|
-        "<ul class=\"#{type}\">" + flash_messages[type.to_sym].map {|message| "<li>#{message}</li>" }.join + "</ul>"
+        if flash_messages[type.to_sym].count > 1
+          list = flash_messages[type.to_sym].map {|message| "<li>#{message}</li>" }.join
+        else
+          list = flash_messages[type.to_sym].map {|message| "<li class=\"inline\">#{message}</li>" }.join
+        end
+        
+        "<div class=\"alert alert-#{type}\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button><strong>" + blurb + "</strong><ul>" + list + "</ul></div>"
       end.join
       
       unless contents.blank?
