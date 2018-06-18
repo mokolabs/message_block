@@ -46,13 +46,9 @@ module MessageBlock
       flash_messages[options[:model_error_type].to_sym] += model_errors
       
       contents = flash_messages.keys.sort_by(&:to_s).select {|type| !flash_messages[type.to_sym].empty? }.map do |type|
-        if flash_messages[type.to_sym].count > 1
-          list = flash_messages[type.to_sym].map {|message| "<li>#{message}</li>" }.join
-        else
-          list = flash_messages[type.to_sym].map {|message| "<li class=\"inline\">#{message}</li>" }.join
-        end
+        list = flash_messages[type.to_sym].map {|message| "<li>#{message}</li>" }.join
         
-        "<div class=\"alert alert-#{type}\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button><strong>#{BLURBS[type]}</strong><ul>" + list + "</ul></div>"
+        "<div class=\"alert alert-#{type}\"><button type=\"button\" class=\"close\" data-dismiss=\"alert\">&times;</button><strong>#{BLURBS[type]}</strong><ul class=\"#{flash_messages[type.to_sym].count == 1 ? 'inline' : ''}\">" + list + "</ul></div>"
       end.join
       
       unless contents.blank?
